@@ -16,15 +16,15 @@
 # limitations under the License.
 ###############################################################################
 
-FROM flink:1.11.3-scala_2.11
+FROM flink:1.12.0-scala_2.11
 
 # Copy sql-client script
 COPY sql-client/ /opt/sql-client
 RUN mkdir -p /opt/sql-client/lib
 
 # Download connector libraries
-RUN wget -P /opt/sql-client/lib/ https://repo.maven.apache.org/maven2/org/apache/flink/flink-json/1.11.3/flink-json-1.11.3.jar; \
-    wget -P /opt/sql-client/lib/ https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-kafka_2.11/1.11.3/flink-sql-connector-kafka_2.11-1.11.3.jar;
+RUN wget -P /opt/sql-client/lib/ https://repo.maven.apache.org/maven2/org/apache/flink/flink-json/1.12.0/flink-json-1.12.0.jar; \
+    wget -P /opt/sql-client/lib/ https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-kafka_2.11/1.12.0/flink-sql-connector-kafka_2.11-1.12.0.jar;
 
 # Copy configuration
 COPY conf/* /opt/flink/conf/
