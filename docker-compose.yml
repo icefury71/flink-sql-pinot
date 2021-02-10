@@ -28,6 +28,7 @@ services:
   sql-client:
     build: ./client-image
     image: client-image:latest
+    container_name: flink-sql-client
     depends_on:
       - kafka
       - jobmanager
@@ -37,13 +38,15 @@ services:
       KAFKA_BOOTSTRAP: kafka
   jobmanager:
     image: flink:1.12.0-scala_2.11
+    container_name: flink-jobmanager
     ports:
-      - "8081:8081"
+      - 8081:8081
     command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
   taskmanager:
     image: flink:1.12.0-scala_2.11
+    container_name: flink-taskmanager
     depends_on:
       - jobmanager
     command: taskmanager
@@ -51,11 +54,21 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
   pinot:
     image: apachepinot/pinot:0.5.0
-    container_name: apache-pinot
+    container_name: pinot
     command: ["QuickStart", "-type", "STREAM"]
     restart: unless-stopped
     ports:
       - 8000:8000
       - 9000:9000
+    volumes:
+      - ./pinot/table_config.json:/table_config.json
+      - ./pinot/schema_config.json:/schema_config.json
     depends_on:
       - kafka
+  superset:
+    image: apachepinot/pinot-superset
+    container_name: superset
+    ports:
+      - 8088:8080
+    depends_on:
+      - pinot
