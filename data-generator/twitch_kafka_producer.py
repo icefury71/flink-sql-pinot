@@ -30,12 +30,15 @@ def json_serializer(obj):
 
 try:
     streams = client.get_streams(page_size=100)
-    for stream in islice(streams, 0, 500):
-        p.produce('twitch-streams', json.dumps(stream, default=json_serializer, ensure_ascii=False).encode('utf-8'), callback=acked)
-        #print(json.dumps(stream, default=json_serializer, ensure_ascii=False).encode('utf-8'))
-        p.poll(0.5)
 
-except KeyboardInterrupt:
-    pass
+    while streams.next:
+
+        for stream in islice(streams, 0, 100):
+            p.produce('twitch-streams', json.dumps(stream, default=json_serializer, ensure_ascii=False).encode('utf-8'), callback=acked)
+            p.poll(0.5)
+
+except Exception, e:
+    print >> sys.stderr, "Exception: %s" % str(e)
+    sys.exit(1)
 
 p.flush(30)

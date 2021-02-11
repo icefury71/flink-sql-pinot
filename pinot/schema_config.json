@@ -1,0 +1,25 @@
+{
+  "schemaName": "twitch-streams",
+  "dimensionFieldSpecs": [
+    {
+      "name": "user_id",
+      "dataType": "STRING"
+    },
+    {
+      "name": "user_name",
+      "dataType": "STRING"
+    }
+  ],
+  "metricFieldSpecs": [
+    {
+      "name": "cnt",
+      "dataType": "INT"
+    }
+  ],
+  "dateTimeFieldSpecs": [{
+    "name": "tmstp",
+    "dataType": "STRING",
+    "format" : "1:HOURS:SIMPLE_DATE_FORMAT:yyyy-MM-dd HH:mm:ss",
+    "granularity": "1:SECONDS"
+  }]
+}
