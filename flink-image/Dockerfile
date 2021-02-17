@@ -18,19 +18,13 @@
 
 FROM flink:1.12.0-scala_2.11
 
-# Copy sql-client script
-COPY sql-client/ /opt/sql-client
-RUN mkdir -p /opt/sql-client/lib
-
-# Download connector libraries
-RUN wget -P /opt/sql-client/lib/ https://repo.maven.apache.org/maven2/org/apache/flink/flink-json/1.12.0/flink-json-1.12.0.jar; \
-    wget -P /opt/sql-client/lib/ https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-kafka_2.11/1.12.0/flink-sql-connector-kafka_2.11-1.12.0.jar;
-
-# Copy configuration
-COPY conf/* /opt/flink/conf/
-
-WORKDIR /opt/sql-client
-ENV SQL_CLIENT_HOME /opt/sql-client
-
-COPY docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
+RUN mkdir /opt/flink/plugins/flink-s3-fs-hadoop; \
+    mv /opt/flink/opt/flink-s3-fs-hadoop-1.12.0.jar /opt/flink/plugins/flink-s3-fs-hadoop/.; \
+    echo "s3.access-key: dummy-access-key" >> /opt/flink/conf/flink-conf.yaml; \
+    echo "s3.secret-key: dummy-secret-key" >> /opt/flink/conf/flink-conf.yaml; \
+    echo "fs.s3a.access.key: dummy-access-key" >> /opt/flink/conf/flink-conf.yaml; \
+    echo "fs.s3a.secret.key: dummy-secret-key" >> /opt/flink/conf/flink-conf.yaml; \
+    echo "fs.s3a.endpoint: http://minio:80" >> /opt/flink/conf/flink-conf.yaml; \
+    echo "fs.s3a.path.style.access: true" >> /opt/flink/conf/flink-conf.yaml; \
+    sed -i -e 's/taskmanager.memory.process.size: 1568m/taskmanager.memory.process.size: 1728m/g' /opt/flink/conf/flink-conf.yaml; \
+    echo "taskmanager.memory.jvm-metaspace.size: 256m" >> /opt/flink/conf/flink-conf.yaml;
