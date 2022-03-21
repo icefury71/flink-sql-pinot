@@ -1,0 +1,31 @@
+{
+  "schemaName": "twitch_streams_orig",
+  "dimensionFieldSpecs": [
+    { 
+      "name": "id",
+      "dataType": "STRING"
+    },
+    {
+      "name": "user_id",
+      "dataType": "STRING"
+    },
+    {
+      "name": "user_name",
+      "dataType": "STRING"
+    },
+    { 
+      "name": "game_id",
+      "dataType": "STRING"
+    },
+    {
+      "name": "game_name",
+      "dataType": "STRING"
+    }
+  ],
+  "dateTimeFieldSpecs": [{
+    "name": "timestamp",
+    "dataType": "LONG",
+    "format": "1:MILLISECONDS:EPOCH",
+    "granularity": "1:MILLISECONDS"
+  }]
+}

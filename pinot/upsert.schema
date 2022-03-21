@@ -1,0 +1,54 @@
+{
+  "schemaName": "twitch_streams_upsert",
+  "dimensionFieldSpecs": [
+    {
+      "name": "id",
+      "dataType": "STRING"
+    },
+    {
+      "name": "user_id",
+      "dataType": "STRING"
+    },
+    {
+      "name": "user_name",
+      "dataType": "STRING"
+    },
+    {
+      "name": "game_id",
+      "dataType": "STRING"
+    },
+    {
+      "name": "game_name",
+      "dataType": "STRING"
+    },
+    {
+      "name": "started_at",
+      "dataType": "STRING"
+    },
+    {
+      "name": "viewer_count",
+      "dataType": "INT"
+    },
+    {
+      "name": "event_time",
+      "dataType": "STRING"
+    },
+    {
+      "name": "tag_id",
+      "dataType": "STRING"
+    },
+    {
+      "name": "description",
+      "dataType": "STRING"
+    }
+  ],
+  "dateTimeFieldSpecs": [
+    {
+      "name": "event_time_ms",
+      "dataType": "LONG",
+      "format": "1:MILLISECONDS:EPOCH",
+      "granularity": "1:MILLISECONDS"
+    }
+  ],
+  "primaryKeyColumns": ["id"]
+}

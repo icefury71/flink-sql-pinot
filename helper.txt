@@ -1,0 +1,92 @@
+-------------------- KAFKA ENV -------------------------
+
+# Kafka topic name
+twitch-streams
+
+# Kafka broker URL
+kafka:29092
+
+# Pinot transform function
+fromDateTime(event_time, 'yyyy-MM-dd''T''HH:mm:ss')
+
+# Kafka auto-create
+export KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+
+------------------- FLINK SQL --------------------------
+
+# Read from Kafka
+CREATE TABLE twitch_streams (
+id STRING,
+user_id STRING,
+user_name STRING,
+game_id STRING,
+game_name STRING,
+started_at STRING,
+viewer_count INT,
+event_time STRING,
+tag_id STRING
+)
+WITH (
+'connector' = 'kafka',
+'topic' = 'twitch-streams',
+'properties.bootstrap.servers' = 'kafka:29092',
+'properties.group.id' = 'flink-consumer-group',
+'format' = 'json',
+'scan.startup.mode' = 'earliest-offset'
+);
+
+
+# Read from S3 (tags)
+CREATE TABLE twitch_stream_tags (
+tag_id STRING,
+description STRING
+)
+WITH (
+'connector' = 'filesystem',
+'path' = 's3://data/',
+'format' = 'json'
+);
+
+# Create table (join streams with tags)
+CREATE TABLE twitch_streams_with_tags (
+id STRING,
+user_id STRING,
+user_name STRING,
+game_id STRING,
+game_name STRING,
+started_at STRING,
+viewer_count INT,
+event_time STRING,
+tag_id STRING,
+description STRING
+)
+WITH (
+'connector' = 'kafka',
+'topic' = 'twitch_streams_with_tags',
+'properties.bootstrap.servers' = 'kafka:29092',
+'key.format' = 'raw',
+'key.fields' = 'id',
+'value.format' = 'json'
+);
+
+
+# Join and insert
+INSERT INTO twitch_streams_with_tags
+select t.id, t.user_id, t.user_name, t.game_id, t.game_name, t.started_at,
+t.viewer_count, t.event_time, g.tag_id, g.description from twitch_streams AS t INNER
+JOIN twitch_stream_tags AS g ON t.tag_id = g.tag_id;
+
+
+------------------------------ PINOT QUERY --------------------------
+
+# Count, group by id
+   select count(*) as cnt_streams, id from twitch_streams group by id order by cnt_streams desc limit 1000000
+
+
+
+---------------------------- SUPERSET ------------------------------
+
+# SQL Alchemy URI
+pinot://pinot:8000/query/sql?controller=http://pinot:9000/
+
+
